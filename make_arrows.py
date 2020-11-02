@@ -28,3 +28,12 @@ for file in files:
         x, y, w, h = cv2.boundingRect(contours[-1])
         crop = rotated[y:y + h, x:x + w, :]
         cv2.imwrite(file.replace(".png", f".reg{region.label}.png").replace("map.topo", "arrow."), crop)
+
+mask_img = cv2.imread(f"{path}/mask.png")
+_, thresh = cv2.threshold(cv2.cvtColor(mask_img, cv2.COLOR_BGR2GRAY), 1, 255, cv2.THRESH_BINARY)
+contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+image = cv2.imread(f"{path}/nets.sh7.png")
+for cnt in contours:
+    approx = cv2.approxPolyDP(cnt, 0.009 * cv2.arcLength(cnt, True), True)
+    cv2.drawContours(image, [approx], 0, (0, 0, 0), 5)
+cv2.imwrite(f"{path}/arrow.nets.sh7.png", image)
