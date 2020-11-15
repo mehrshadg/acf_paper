@@ -11,15 +11,12 @@ from neuro_helper.template import load_schaefer_template, load_cole_template, ge
 from neuro_helper.plot import template_meta_combination, net_meta_C
 from neuro_helper.entity import Space, TemplateName, TopoName
 from sklearn.feature_selection import SelectKBest, mutual_info_classif
+from helper import net_meta_C, template_meta_combination, lib_details
 
 space = Space.K32
 load_schaefer_template(space, 200, 7)
 load_cole_template(space)
 tasks = task_order()
-lib_details = [
-    (acw, "acw", "ACW-50"),
-    (acz, "acz", "ACW-0")
-]
 
 
 def print_ttest(label, d1, d2):

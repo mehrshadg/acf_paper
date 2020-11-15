@@ -22,6 +22,8 @@ tpt_name = TemplateName.COLE_360
 load_schaefer_template(space, 200, 7)
 load_cole_template(space)
 
+PMC_labels = ["Periphery", "Intermediate", "Core"]
+
 
 # noinspection PyTypeChecker
 def fig1():

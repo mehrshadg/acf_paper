@@ -15,15 +15,15 @@ from neuro_helper.hcp.meg import task_order
 from neuro_helper.generic import combine_topo_map
 from neuro_helper.template import *
 from neuro_helper.plot import *
+from helper import net_meta_C, template_meta_combination, lib_details
+
 
 space = Space.K32
 load_schaefer_template(space, 200, 7)
 load_cole_template(space)
 tasks = task_order()
-lib_details = [
-    (acw, "acw", "ACW-50"),
-    (acz, "acz", "ACW-0")
-]
+font_scale = 1.1
+sns.set(font_scale=font_scale, style="whitegrid")
 
 
 def map_regions_pc_sh2007():
