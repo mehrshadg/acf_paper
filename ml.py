@@ -1,6 +1,5 @@
-from neuro_helper.entity import TemplateName
+from neuro_helper.abstract.map import HierarchyName
 from neuro_helper.plot import savefig
-from neuro_helper.template import get_net
 from sklearn import svm, metrics
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler
@@ -14,22 +13,23 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
+from config import *
 
-tpt_name = TemplateName.COLE_360
+tpt = tpt_cole
 
 
 def single():
     scaler = StandardScaler()
 
     df = pd.merge(
-        acw.gen_long_data(tpt_name)
+        acw.gen_long_data(tpt)
             .normalize(columns="metric")
-            .add_net_meta(get_net("pmc", tpt_name))
+            .add_net_meta(tpt.net_hierarchy(HierarchyName.RESTRICTED_PERIPHERY_CORE))
             .groupby(["task", "subject", "region", "net_meta"]).mean().reset_index()
             .rename(columns={"metric": "acw"}),
-        acz.gen_long_data(tpt_name)
+        acz.gen_long_data(tpt)
             .normalize(columns="metric")
-            .add_net_meta(get_net("pmc", tpt_name))
+            .add_net_meta(tpt.net_hierarchy(HierarchyName.RESTRICTED_PERIPHERY_CORE))
             .groupby(["task", "subject", "region", "net_meta"]).mean().reset_index()
             .rename(columns={"metric": "acz"}),
         on=["task", "subject", "region", "net_meta"], sort=False).and_filter(NOTnet_meta="M")
@@ -101,14 +101,14 @@ def kfold():
     K = 2
 
     df = pd.merge(
-        acw.gen_long_data(tpt_name)
+        acw.gen_long_data(tpt)
             .normalize(columns="metric")
-            .add_net_meta(get_net("pmc", tpt_name))
+            .add_net_meta(tpt.net_hierarchy(HierarchyName.RESTRICTED_PERIPHERY_CORE))
             .groupby(["task", "subject", "region", "net_meta"]).mean().reset_index()
             .rename(columns={"metric": "acw"}),
-        acz.gen_long_data(tpt_name)
+        acz.gen_long_data(tpt)
             .normalize(columns="metric")
-            .add_net_meta(get_net("pmc", tpt_name))
+            .add_net_meta(tpt.net_hierarchy(HierarchyName.RESTRICTED_PERIPHERY_CORE))
             .groupby(["task", "subject", "region", "net_meta"]).mean().reset_index()
             .rename(columns={"metric": "acz"}),
         on=["task", "subject", "region", "net_meta"], sort=False).and_filter(NOTnet_meta="M")
@@ -140,14 +140,14 @@ def kfold():
 
 def select_best():
     df = pd.merge(
-        acw.gen_long_data(tpt_name)
+        acw.gen_long_data(tpt)
             .normalize(columns="metric")
-            .add_net_meta(get_net("pmc", tpt_name))
+            .add_net_meta(tpt.net_hierarchy(HierarchyName.RESTRICTED_PERIPHERY_CORE))
             .groupby(["task", "subject", "region", "net_meta"]).mean().reset_index()
             .rename(columns={"metric": "acw"}),
-        acz.gen_long_data(tpt_name)
+        acz.gen_long_data(tpt)
             .normalize(columns="metric")
-            .add_net_meta(get_net("pmc", tpt_name))
+            .add_net_meta(tpt.net_hierarchy(HierarchyName.RESTRICTED_PERIPHERY_CORE))
             .groupby(["task", "subject", "region", "net_meta"]).mean().reset_index()
             .rename(columns={"metric": "acz"}),
         on=["task", "subject", "region", "net_meta"], sort=False).and_filter(NOTnet_meta="M")
