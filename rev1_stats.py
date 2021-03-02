@@ -13,6 +13,10 @@ import pingouin as pg
 from config import *
 
 tasks = task_order()
+lib_details = [
+    (acw, "acw", "ACW-50"),
+    (acz, "acz", "ACW-0")
+]
 
 
 def print_ttest(label, d1, d2):
@@ -43,7 +47,7 @@ def rest_cp_reg():
                 .and_filter(task="Rest") \
                 .convert_column(metric=lambda x: x * 1000) \
                 .add_net_meta(tpt.net_hierarchy(h_name)).drop("network", 1) \
-                .add_topo(topo_at[tpt])
+                .add_topo(topo_at[tpt.key])
             df = pd.merge(df, pd.Series(sm.OLS(df.metric, df.coord_y).fit().resid, df.index, float, "resid"),
                           left_index=True, right_index=True) \
                 .groupby("net_meta").apply(remove_outliers, of="metric").reset_index(drop=True)
@@ -102,7 +106,7 @@ def task_cp_reg():
             df = lib.gen_long_data(tpt).groupby(["task", "region", "network"]).mean().reset_index() \
                 .and_filter(NOTtask="Rest") \
                 .convert_column(metric=lambda x: x * 1000) \
-                .add_topo(topo_at[tpt]) \
+                .add_topo(topo_at[tpt.key]) \
                 .add_net_meta(tpt.net_hierarchy(h_name)) \
                 .groupby("task").apply(
                 lambda x: pd.merge(x, pd.Series(sm.OLS(x.metric, x.coord_y).fit().resid, x.index, float, "resid"),
@@ -185,3 +189,7 @@ def feature_selection():
     model = SelectKBest(mutual_info_classif, k=1).fit(x, y)
     print(f"ACW-50: score = {model.scores_[0]}\n"
           f"ACW-0: score = {model.scores_[1]}")
+
+
+if __name__ == "__main__":
+    task_cp_reg()

@@ -8,7 +8,6 @@ from neuro_helper.measurement import calc_acz
 from neuro_helper.generic import out_of, generate_long_data
 from neuro_helper.generic import find_shared_subjects as fs_subjects
 from neuro_helper.storage import ANYTHING
-import config
 
 
 def do_a_file(file):
@@ -18,8 +17,9 @@ def do_a_file(file):
 
 
 def run_script(tpt: TemplateMap):
+    from config import RAW_DATA_ROOT_DIR
     for task in task_order():
-        storage = MEGLocalStorage(config.RAW_DATA_ROOT_DIR, tpt.name, task, ANYTHING)
+        storage = MEGLocalStorage(RAW_DATA_ROOT_DIR, tpt.name, task, ANYTHING)
         files_dict = storage.get_all_by_scan()
         for scan_id, file_infos in files_dict.items():
             output_file = out_of(f"megs-hcp-{task}.acz.rois-{tpt.name}.scan-{scan_id}.npy", False)

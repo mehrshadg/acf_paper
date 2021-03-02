@@ -26,6 +26,10 @@ from config import *
 
 
 tasks = task_order()
+lib_details = [
+    (acw, "acw", "ACW-50"),
+    (acz, "acz", "ACW-0")
+]
 font_scale = 1.1
 sns.set(font_scale=font_scale, style="whitegrid")
 PC_colors_tuple = paired_colors(True)
@@ -175,7 +179,7 @@ def rest_cp_reg():
                 .and_filter(task="Rest") \
                 .convert_column(metric=lambda x: x * 1000) \
                 .add_net_meta(tpt.net_hierarchy(h_name)).drop("network", 1) \
-                .add_topo(topo_at[tpt])
+                .add_topo(topo_at[tpt.key])
             df = pd.merge(
                 df, pd.Series(sm.OLS(df.metric, df.coord_y).fit().resid, df.index, float, "resid"),
                 left_index=True, right_index=True) \
@@ -251,7 +255,7 @@ def task_cp_reg():
             df = lib.gen_long_data(tpt).groupby(["task", "region", "network"]).mean().reset_index() \
                 .and_filter(NOTtask="Rest") \
                 .convert_column(metric=lambda x: x * 1000) \
-                .add_topo(topo_at[tpt]) \
+                .add_topo(topo_at[tpt.key]) \
                 .add_net_meta(tpt.net_hierarchy(h_name)) \
                 .groupby("task").apply(
                 lambda x: pd.merge(x, pd.Series(sm.OLS(x.metric, x.coord_y).fit().resid, x.index, float, "resid"),
@@ -351,7 +355,7 @@ def map_nets_cole():
 
 def map_topo():
     for tpt in [tpt_sh, tpt_cole]:
-        coord_map = topo_at[tpt]().data.drop(["coord_x", "coord_z", "network"], 1)
+        coord_map = topo_at[tpt.key]().data.drop(["coord_x", "coord_z", "network"], 1)
         for lib, name, lbl in lib_details:
             df = pd.merge(
                 lib.gen_long_data(tpt).groupby(["task", "region"]).mean().reset_index(),
@@ -373,7 +377,7 @@ def map_topo():
             topo, brain, series = combine_topo_map(maps)
             savemap(f"topo.{tpt}.{name}", topo, brain, series)
 
-        df = topo_marg[tpt]().data
+        df = topo_marg[tpt.key]().data
         topo, brain, series = combine_topo_map([
             df[["region", "gradient"]].build_single_topo_map(tpt),
             df[["region", "gradient"]].normalize("gradient", 0.01, 0.99).build_single_topo_map(tpt)
@@ -386,7 +390,7 @@ def rest_task_spatial_corr():
 
     for tpt, h_name in template_meta_combination:
         print(f"Template {tpt} and meta {h_name}")
-        gradient_map = topo_marg[tpt]().data.rename(columns={"gradient": "metric"}) \
+        gradient_map = topo_marg[tpt.key]().data.rename(columns={"gradient": "metric"}) \
             .add_net_meta(tpt.net_hierarchy(h_name))
         gradient_map["task"] = "gradient"
         for lib, name, lbl in lib_details:
